@@ -22,10 +22,10 @@ app.get '/healthy', (req, res) ->
   return
 
 # route "/submit": Validate and handle form submission
-app.get '/generate', (req, res) ->
+app.all '/generate', (req, res) ->
   epiUrl = local_epi + 'epiquery1/glglive/glg-auth/authenticate.mustache'
   # call epiquery to validate user email
-  request.post epiUrl, { form: email: req.body.email }, (err, httpResponse, body) ->
+  request.post epiUrl, { form: email: req.body.email ? req.query.email }, (err, httpResponse, body) ->
     sendResponse = getSendResponse(res)
     if err?
       sendResponse error: "Error posting to epiquery: #{err}"
@@ -36,32 +36,26 @@ app.get '/generate', (req, res) ->
       if parsedBody?.error
         sendResponse error: "Error posting to epiquery: #{parsedBody.error}"
         return
-      # epi responded successfully
-      if Array.isArray(parsedBody)
-        output = parsedBody[0]
-        unless output?.PERSON_ID?
-          sendResponse error: "Missing PERSON_ID: #{body}"
-          return
-        # set roles based on IDs returned, For now, the only role we support is CM.
-        jwt.sign {
-          role: if output.COUNCIL_MEMBER_ID then 'cm' else ''
-          personid: output.PERSON_ID
-          cmid: output.COUNCIL_MEMBER_ID
-        }, secret, {
-          algorithm: 'HS256'
-          expiresIn: '6h'
-        }, (new_jwt) ->
-          sendResponse jwt: new_jwt
-          return
-        return
       # epi responded with something utterly unexpected
-      sendResponse error: "Unexpected epi response: #{body}"
-      return
+      unless Array.isArray(parsedBody)
+        sendResponse error: "Unexpected epi response: #{body}"
+      # epi responded successfully
+      output = parsedBody[0]
+      unless output?.PERSON_ID?
+        sendResponse error: "Missing PERSON_ID: #{body}"
+        return
+      # set roles based on IDs returned, For now, the only role we support is CM.
+      jwt.sign {
+        role: if output.COUNCIL_MEMBER_ID then 'cm' else ''
+        personid: output.PERSON_ID
+        cmid: output.COUNCIL_MEMBER_ID
+      }, secret, {
+        algorithm: 'HS256'
+        expiresIn: '6h'
+      }, (new_jwt) ->
+        sendResponse jwt: new_jwt
     catch err
       sendResponse error: "Error parsing epistream response to #{epiUrl} Error Details: #{err}"
-      return
-    return
-  return
 
 getSendResponse = (res) ->
   (res_body) ->
