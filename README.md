@@ -9,7 +9,7 @@ App to generate JWT tokens.
 Expects an email address to be provided via either get or post as the parameter "email".
 Example:
 
-    http://services.glgresearch.com/jwt-generator/?email=cm_email@foo.com
+    http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com
 
 #### Success
 Returns a JWT if successfull:
