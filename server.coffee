@@ -21,7 +21,7 @@ app.get '/healthy', (req, res) ->
   res.send()
   return
 
-# route "/submit": Validate and handle form submission
+# route "/generate": generates jwt token
 app.all '/generate', (req, res) ->
   epiUrl = local_epi + 'epiquery1/glglive/glg-auth/authenticate.mustache'
   # call epiquery to validate user email
