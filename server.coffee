@@ -51,7 +51,7 @@ app.all '/generate', (req, res) ->
         cmid: output.COUNCIL_MEMBER_ID
       }, secret, {
         algorithm: 'HS256'
-        expiresIn: '6h'
+        expiresIn: req.body.expiration ? req.query.expiration ? '6h'
       }, (new_jwt) ->
         sendResponse jwt: new_jwt
     catch err
