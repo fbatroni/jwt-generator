@@ -24,7 +24,10 @@ app.get '/healthy', (req, res) ->
 # route "/generate": generates jwt token
 app.all '*', (req, res) ->
       tokenStuff = {}
-      tokenStuff[name] = req.body[name] for name in req.body
+      tokenStuff[key] = value for own key,value of req.body
+      tokenStuff[key] = value for own key,value of req.query
+      console.log(req.query)
+      console.log(name) for name in req.query
       console.log util.inspect(tokenStuff)
       signingParams = { algorithm: 'HS256', expiresIn: tokenStuff.expiration ? '6h'}
       jwt.sign tokenStuff, secret, signingParams, (new_jwt) ->
