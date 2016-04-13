@@ -44,18 +44,24 @@ app.all '/generate', (req, res) ->
       unless output?.PERSON_ID?
         sendResponse error: "Missing PERSON_ID: #{body}"
         return
+      # grab the payload from the request, if there is one
+      payload = getPayload(req)
       # set roles based on IDs returned, For now, the only role we support is CM.
-      jwt.sign {
-        role: if output.COUNCIL_MEMBER_ID then 'cm' else ''
-        personid: output.PERSON_ID
-        cmid: output.COUNCIL_MEMBER_ID
-      }, secret, {
+      payload.role = if output.COUNCIL_MEMBER_ID? then 'cm' else ''
+      payload.personid = output.PERSON_ID
+      payload.cmid = output.COUNCIL_MEMBER_ID
+      jwt.sign payload, secret, {
         algorithm: 'HS256'
         expiresIn: req.body.expiration ? req.query.expiration ? '6h'
       }, (new_jwt) ->
         sendResponse jwt: new_jwt
     catch err
       sendResponse error: "Error parsing epistream response to #{epiUrl} Error Details: #{err}"
+
+getPayload = (req) ->
+  if req.body.payload? or req.query.payload?
+    return JSON.parse(req.body.payload ? req.query.payload)
+  return {}
 
 getSendResponse = (res) ->
   (res_body) ->
