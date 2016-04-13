@@ -17,7 +17,7 @@ If this is not set, expiration defaults to 6 hours.
 Example:
 
 
-    http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com&expires=6h
+    http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com&expiration=6h
 
 #### Success
 Returns a JWT if successfull:
