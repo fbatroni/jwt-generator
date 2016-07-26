@@ -1,11 +1,8 @@
 express = require('express')
-request = require('request')
 bodyParser = require('body-parser')
-jwt = require('jsonwebtoken')
 winston = require('winston')
-local_epi = process.env.LOCAL_EPIQUERY
+glgutil = require('glg-jwt').glgutil
 port = process.env.PORT
-secret = process.env.JWT_SECRET
 app = express()
 
 winston.setLevels winston.config.syslog.levels
@@ -23,45 +20,12 @@ app.get '/healthy', (req, res) ->
 
 # route "/generate": generates jwt token
 app.all '/generate', (req, res) ->
-  epiUrl = local_epi + 'epiquery1/glglive/glg-auth/authenticate.mustache'
-  # call epiquery to validate user email
-  request.post epiUrl, { form: email: req.body.email ? req.query.email }, (err, httpResponse, body) ->
-    sendResponse = getSendResponse(res)
-    if err?
-      sendResponse error: "Error posting to epiquery: #{err}"
-      return
-    try
-      parsedBody = JSON.parse(body)
-      # epi responded with an error
-      if parsedBody?.error
-        sendResponse error: "Error posting to epiquery: #{parsedBody.error}"
-        return
-      # epi responded with something utterly unexpected
-      unless Array.isArray(parsedBody)
-        sendResponse error: "Unexpected epi response: #{body}"
-      # epi responded successfully
-      output = parsedBody[0]
-      unless output?.PERSON_ID?
-        sendResponse error: "Missing PERSON_ID: #{body}"
-        return
-      # grab the payload from the request, if there is one
-      payload = getPayload(req)
-      # set roles based on IDs returned, For now, the only role we support is CM.
-      payload.role = if output.COUNCIL_MEMBER_ID? then 'cm' else ''
-      payload.personid = output.PERSON_ID
-      payload.cmid = output.COUNCIL_MEMBER_ID
-      jwt.sign payload, secret, {
-        algorithm: 'HS256'
-        expiresIn: req.body.expiration ? req.query.expiration ? '6h'
-      }, (new_jwt) ->
-        sendResponse jwt: new_jwt
-    catch err
+  sendResponse = getSendResponse(res)
+  glgutil.getUsersPayload(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? '6h')
+    .then usersPayload ->
+      sendResponse jwt: usersPayload.token
+    .catch err
       sendResponse error: "Error parsing epistream response to #{epiUrl} Error Details: #{err}"
-
-getPayload = (req) ->
-  if req.body.payload? or req.query.payload?
-    return JSON.parse(req.body.payload ? req.query.payload)
-  return {}
 
 getSendResponse = (res) ->
   (res_body) ->
