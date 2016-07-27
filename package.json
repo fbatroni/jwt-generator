@@ -26,7 +26,7 @@
     "express": "^4.13.3",
     "winston": "^2.1.1",
     "body-parser": "^1.14.1",
-    "glg-jwt": "git+ssh://git@github.com:glg/glg-jwt"
+    "glg-jwt": "git+ssh://git@github.com:asegal/glg-jwt"
   },
   "devDependencies": {},
   "engines": {
