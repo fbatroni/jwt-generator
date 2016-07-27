@@ -23,9 +23,9 @@ app.get '/healthy', (req, res) ->
 app.all '/generate', (req, res) ->
   sendResponse = getSendResponse(res)
   glgutil.getUsersPayload(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? '6h')
-    .then usersPayload ->
+    .then (usersPayload) ->
       sendResponse jwt: usersPayload.token
-    .catch err ->
+    .catch (err) ->
       sendResponse error: "Error parsing epistream response to #{epiUrl} Error Details: #{err}"
 
 getSendResponse = (res) ->
