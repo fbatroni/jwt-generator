@@ -24,6 +24,7 @@ app.all '/generate', (req, res) ->
   sendResponse = getSendResponse(res)
   glgutil.getUsersPayload(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? '6h')
     .then (usersPayload) ->
+      log.info "got usersPayload: #{usersPayload}"
       sendResponse jwt: usersPayload.token
     .catch (err) ->
       log.err "#{err}"
@@ -31,6 +32,7 @@ app.all '/generate', (req, res) ->
 
 getSendResponse = (res) ->
   (res_body) ->
+    log.info "sending response: #{res_body}"
     res.writeHead 200, 'Content-Type': 'application/json'
     res.write JSON.stringify(res_body)
     res.send()
