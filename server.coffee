@@ -26,7 +26,8 @@ app.all '/generate', (req, res) ->
     .then (usersPayload) ->
       sendResponse jwt: usersPayload.token
     .catch (err) ->
-      sendResponse error: "Error parsing epistream response to #{epiUrl} Error Details: #{err}"
+      log.err "#{err}"
+      sendResponse error: "Error getting usersPayload, using #{epiUrl} Error Details: #{err}"
 
 getSendResponse = (res) ->
   (res_body) ->
