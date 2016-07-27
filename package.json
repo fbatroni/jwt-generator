@@ -1,6 +1,6 @@
 {
-  "name": "glg-jwt-auth",
-  "version": "0.0.1",
+  "name": "jwt-generator",
+  "version": "1.0.0",
   "author": "Amit Segal <asegal@glgroup.com>",
   "description": "A node.js app that sets a jwt cookie",
   "main": "",
