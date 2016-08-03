@@ -24,15 +24,15 @@ app.all '/generate', (req, res) ->
   sendResponse = getSendResponse(res)
   glgutil.getUsersPayload(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? 6*60*60 )
     .then (usersPayload) ->
-      log.info "got usersPayload: #{usersPayload}"
+      log.debug "got usersPayload: #{JSON.stringify(usersPayload)}"
       sendResponse jwt: usersPayload.token
     .catch (err) ->
-      log.err "#{err}"
+      log.error "#{err}"
       sendResponse error: "Error getting usersPayload, using #{epiUrl} Error Details: #{err}"
 
 getSendResponse = (res) ->
   (res_body) ->
-    log.info "sending response: #{res_body}"
+    log.debug "sending response: #{JSON.stringify(res_body)}"
     res.writeHead 200, 'Content-Type': 'application/json'
     res.write JSON.stringify(res_body)
     res.send()
