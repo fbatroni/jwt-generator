@@ -22,7 +22,7 @@ app.get '/healthy', (req, res) ->
 # route "/generate": generates jwt token
 app.all '/generate', (req, res) ->
   sendResponse = getSendResponse(res)
-  glgutil.getUsersPayload(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? 6*60*60 )
+  glgutil.getUsersPayloadByEmail(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? 6*60*60 )
     .then (usersPayload) ->
       log.debug "got usersPayload: #{JSON.stringify(usersPayload)}"
       sendResponse jwt: usersPayload.token
