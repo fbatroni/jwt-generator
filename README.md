@@ -12,7 +12,7 @@ Example:
     http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com
 
 #### Expiration parameter (optional)
-May include an expiration time expressed in seconds or a string describing a time span [rauchg/ms](https://github.com/rauchg/ms.js). Eg: 60, "2 days", "10h", "7d".
+May include an expiration time expressed in seconds or a string describing a time span [moment](http://momentjs.com/docs/#/durations/creating/). Eg: 60, "2d", "10h", "7d".
 If this is not set, expiration defaults to 6 hours.
 Example:
 
