@@ -2,7 +2,8 @@ express = require('express')
 bodyParser = require('body-parser')
 winston = require('winston')
 glgutil = require('glg-jwt').glgutil
-port = process.env.PORT
+moment = require 'moment'
+port = process.env.PORT ? 3001
 epiUrl = process.env.EPI_AUTH_TEMPLATE
 app = express()
 
@@ -22,7 +23,10 @@ app.get '/healthy', (req, res) ->
 # route "/generate": generates jwt token
 app.all '/generate', (req, res) ->
   sendResponse = getSendResponse(res)
-  glgutil.getUsersPayloadByEmail(req.body.email ? req.query.email,'',req.body.expiration ? req.query.expiration ? 6*60*60 )
+  email = req.body.email ? req.query.email
+  expiration = parseExpiration req
+  url = ''
+  glgutil.getUsersPayloadByEmail email, url, expiration
     .then (usersPayload) ->
       log.debug "got usersPayload: #{JSON.stringify(usersPayload)}"
       sendResponse jwt: usersPayload.token
@@ -36,6 +40,15 @@ getSendResponse = (res) ->
     res.writeHead 200, 'Content-Type': 'application/json'
     res.write JSON.stringify(res_body)
     res.send()
+
+parseExpiration = (req) ->
+  expiration = req.body.expiration ? req.query.expiration ? '6h'
+  # parse into a duration with moment http://momentjs.com/docs/#/durations/creating/
+  matches = expiration.match /^(\d+)([yMwdhms]$)/
+  if matches?
+    moment.duration(parseInt(matches[1]), matches[2]).asSeconds()
+  else
+    parseInt expiration
 
 server = app.listen(port, ->
   host = server.address().address
