@@ -19,13 +19,6 @@ Example:
 
     http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com&expiration=6h
 
-
-#### Payload parameter (optional)
-May include a payload paramter, which is a JSON representation of fields to be included in the payload of the JWT.
-
-
-    http://services.glgresearch.com/jwt-generator/generate/?email=cm_email@foo.com&payload={"foo":"bar"}
-
 #### Success
 Returns a JWT if successfull:
 
