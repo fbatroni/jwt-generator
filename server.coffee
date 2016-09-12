@@ -34,6 +34,20 @@ app.all '/generate', (req, res) ->
       log.error "#{err}"
       sendResponse error: "Error getting usersPayload, using #{epiUrl} Error Details: #{err}"
 
+# route "/generateByCmid": generates jwt token
+app.all '/generateByCmid', (req, res) ->
+  sendResponse = getSendResponse(res)
+  cmid = req.body.cmid ? req.query.cmid
+  expiration = parseExpiration req
+  url = ''
+  glgutil.getUsersPayloadByCmid cmid, url, expiration
+    .then (usersPayload) ->
+      log.debug "got usersPayload: #{JSON.stringify(usersPayload)}"
+      sendResponse jwt: usersPayload.token
+    .catch (err) ->
+      log.error "#{err}"
+      sendResponse error: "Error getting usersPayload, using #{epiUrl} Error Details: #{err}"
+
 getSendResponse = (res) ->
   (res_body) ->
     log.debug "sending response: #{JSON.stringify(res_body)}"
