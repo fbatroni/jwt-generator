@@ -25,7 +25,7 @@
     "body-parser": "^1.14.1",
     "coffee-script": "^1.10.0",
     "express": "^4.13.3",
-    "glg-jwt": "git+ssh://git@github.com/glg/glg-jwt.git#1.0.3",
+    "glg-jwt": "git+ssh://git@github.com/glg/glg-jwt.git#1.0.5",
     "moment": "2.14.1",
     "winston": "^2.1.1"
   },
